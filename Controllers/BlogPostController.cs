@@ -2,6 +2,7 @@
 using CodePulse.API.Models.Request;
 using CodePulse.API.Models.Response;
 using CodePulse.API.Repositories.IRepositories;
+using jdk.nashorn.@internal.ir;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodePulse.API.Controllers
@@ -137,7 +138,6 @@ namespace CodePulse.API.Controllers
 
         [HttpPut]
         [Route("{id=Guid}")]
-
         public async Task<IActionResult> UpdateBlogPostById([FromRoute] Guid id, UpdateBlogPostRequestModel request)
         {
             //convert from DTO to Domain
@@ -192,6 +192,37 @@ namespace CodePulse.API.Controllers
                     Name = x.Name,
                     UrlHandle = x.UrlHandle,
                 }).ToList()
+            };
+
+            return Ok(response);
+        }
+
+        [HttpDelete]
+        [Route("{id=Guid}")]
+
+        public async Task<IActionResult> DeleteBlogPost([FromRoute] Guid id)
+        {
+            //Call repository
+            var deletedBlogPost = await blogPostRepository.DeleteBlogPost(id);
+
+            if(deletedBlogPost == null)
+            {
+                return NotFound();
+            }
+            
+            //convert from Domain to DTO
+
+            var response = new BlogPostResponseModel
+            {
+                Title = deletedBlogPost.Title,
+                ShortDescription = deletedBlogPost.ShortDescription,
+                Content = deletedBlogPost.Content,
+                UrlHandle = deletedBlogPost.UrlHandle,
+                FeaturedImageURL = deletedBlogPost.FeaturedImageURL,
+                DateCreated = deletedBlogPost.DateCreated,
+                Author = deletedBlogPost.Author,
+                IsVisible = deletedBlogPost.IsVisible,
+                
             };
 
             return Ok(response);

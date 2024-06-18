@@ -11,5 +11,7 @@ namespace CodePulse.API.Repositories.IRepositories
         public Task<BlogPostModel?> GetBlogPostById(Guid id);
 
         public Task<BlogPostModel?> UpdateBlogPost(BlogPostModel model);
+
+        public Task<BlogPostModel?> DeleteBlogPost(Guid id);
     }
 }
