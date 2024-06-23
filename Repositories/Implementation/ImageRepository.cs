@@ -2,6 +2,7 @@
 using CodePulse.API.Models.DataBase;
 using CodePulse.API.Repositories.IRepositories;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodePulse.API.Repositories.Implementation
 {
@@ -20,6 +21,11 @@ namespace CodePulse.API.Repositories.Implementation
         }
 
         public IWebHostEnvironment WebHostEnvironment { get; }
+
+        public async Task<ICollection<BlogImage>> GetAllImages()
+        {
+            return await applicationDBContext.BlogImages.ToListAsync();
+        }
 
         public async Task<BlogImage> UploadImage(IFormFile file, BlogImage blogImage)
         {
