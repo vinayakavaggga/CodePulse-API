@@ -1,6 +1,7 @@
 ﻿using CodePulse.API.Data;
 using CodePulse.API.Models.DataBase;
 using CodePulse.API.Repositories.IRepositories;
+using com.sun.xml.@internal.bind.v2.model.core;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodePulse.API.Repositories.Implementation
@@ -28,6 +29,11 @@ namespace CodePulse.API.Repositories.Implementation
         public async Task<BlogPostModel?> GetBlogPostById(Guid id)
         {
            return await _dbContext.BlogPosts.Include(x => x.Category).FirstOrDefaultAsync(x => x.ID == id);
+        }
+
+        public async Task<BlogPostModel?> GetBlogPostByURL(string url)
+        {
+            return await _dbContext.BlogPosts.Include(x => x.Category).FirstOrDefaultAsync(x => x.UrlHandle == url);
         }
 
         public async Task<BlogPostModel?> UpdateBlogPost(BlogPostModel blogPostmodel)
@@ -65,5 +71,7 @@ namespace CodePulse.API.Repositories.Implementation
 
             return existingBlogPost;
         }
+
+        
     }
 }

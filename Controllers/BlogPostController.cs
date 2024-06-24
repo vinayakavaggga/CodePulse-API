@@ -103,7 +103,7 @@ namespace CodePulse.API.Controllers
         }
 
         [HttpGet]
-        [Route("{id=Guid}")]
+        [Route("{id:Guid}")]
         public async Task<IActionResult> GetBlogPostById([FromRoute]Guid id)
         {
             var existingid = await blogPostRepository.GetBlogPostById(id);
@@ -137,7 +137,7 @@ namespace CodePulse.API.Controllers
         }
 
         [HttpPut]
-        [Route("{id=Guid}")]
+        [Route("{id:Guid}")]
         public async Task<IActionResult> UpdateBlogPostById([FromRoute] Guid id, UpdateBlogPostRequestModel request)
         {
             //convert from DTO to Domain
@@ -198,7 +198,7 @@ namespace CodePulse.API.Controllers
         }
 
         [HttpDelete]
-        [Route("{id=Guid}")]
+        [Route("{id:Guid}")]
 
         public async Task<IActionResult> DeleteBlogPost([FromRoute] Guid id)
         {
@@ -223,6 +223,40 @@ namespace CodePulse.API.Controllers
                 Author = deletedBlogPost.Author,
                 IsVisible = deletedBlogPost.IsVisible,
                 
+            };
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("{url}")]
+        public async Task<IActionResult> GetBlogPostByURL([FromRoute] string url)
+        {
+            var blogpost = await blogPostRepository.GetBlogPostByURL(url);
+
+            if (blogpost == null)
+            {
+                return NotFound();
+            }
+
+            //Convert from model to DTO
+            var response = new BlogPostResponseModel
+            {
+                ID = blogpost.ID,
+                Title = blogpost.Title,
+                ShortDescription = blogpost.ShortDescription,
+                Content = blogpost.Content,
+                UrlHandle = blogpost.UrlHandle,
+                FeaturedImageURL = blogpost.FeaturedImageURL,
+                DateCreated = blogpost.DateCreated,
+                Author = blogpost.Author,
+                IsVisible = blogpost.IsVisible,
+                categoryResponse = blogpost.Category.Select(x => new CategoryModel
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlHandle = x.UrlHandle,
+                }).ToList()
             };
 
             return Ok(response);
