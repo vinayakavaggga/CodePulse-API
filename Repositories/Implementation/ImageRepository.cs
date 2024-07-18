@@ -30,7 +30,7 @@ namespace CodePulse.API.Repositories.Implementation
         public async Task<BlogImage> UploadImage(IFormFile file, BlogImage blogImage)
         {
             //Save Files to image folder
-            var localPath = Path.Combine(_webHostEnvironment.ContentRootPath, "Images", $"{blogImage.FileName}{blogImage.FileExtension}");
+            var localPath = Path.Combine(_webHostEnvironment.ContentRootPath, "Resources\\Images", $"{blogImage.FileName}{blogImage.FileExtension}");
             using var stream = new FileStream(localPath, FileMode.Create);
             await file.CopyToAsync(stream);
 
@@ -38,7 +38,7 @@ namespace CodePulse.API.Repositories.Implementation
             //URL Field: https://localhost:4200/Images//fileName.jpg
 
             var httpContext = httpContextAccessor.HttpContext.Request;
-            var urlPath = $"{httpContext.Scheme}://{httpContext.Host}{httpContext.PathBase}/Images/{blogImage.FileName}{blogImage.FileExtension}";
+            var urlPath = $"{httpContext.Scheme}://{httpContext.Host}{httpContext.PathBase}/Resources/Images/{blogImage.FileName}{blogImage.FileExtension}";
 
             blogImage.Url = urlPath;
             await applicationDBContext.BlogImages.AddAsync(blogImage);

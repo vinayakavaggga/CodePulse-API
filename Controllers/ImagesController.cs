@@ -13,42 +13,52 @@ namespace CodePulse.API.Controllers
     public class ImagesController : ControllerBase
     {
         private readonly IImageBlogRepository imageBlogRepository;
+        private readonly ILogger<ImagesController> _logger;
 
-        public ImagesController(IImageBlogRepository imageBlogRepository)
+        public ImagesController(IImageBlogRepository imageBlogRepository, ILogger<ImagesController> logger)
         {
             this.imageBlogRepository = imageBlogRepository;
+            this._logger = logger;
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadImage([FromForm] IFormFile file, [FromForm] string fileName, [FromForm] string title)
+        public async Task<IActionResult> UploadImage(IFormFile file, [FromForm] string fileName, [FromForm] string title)
         {
-            ValidateFileUpload(file);
-            if(ModelState.IsValid)
+            try
             {
-                //Create a domain model
-
-                var blogImage = new BlogImage
+                ValidateFileUpload(file);
+                if (ModelState.IsValid)
                 {
-                    FileExtension = Path.GetExtension(file.FileName),
-                    FileName = fileName,
-                    Title = title,
-                    DateCreated = DateTime.Now
-                };
+                    //Create a domain model
 
-                blogImage = await imageBlogRepository.UploadImage(file, blogImage);
+                    var blogImage = new BlogImage
+                    {
+                        FileExtension = Path.GetExtension(file.FileName),
+                        FileName = fileName,
+                        Title = title,
+                        DateCreated = DateTime.Now
+                    };
 
-                var response = new ImageBlogResponseModel
-                {
-                    Id = blogImage.Id,
-                    FileName = blogImage.FileName,
-                    Title = blogImage.Title,
-                    DateCreated = blogImage.DateCreated,
-                    FileExtension = blogImage.FileExtension,
-                    Url = blogImage.Url
-                };
+                    blogImage = await imageBlogRepository.UploadImage(file, blogImage);
 
-                return Ok(response);
+                    var response = new ImageBlogResponseModel
+                    {
+                        Id = blogImage.Id,
+                        FileName = blogImage.FileName,
+                        Title = blogImage.Title,
+                        DateCreated = blogImage.DateCreated,
+                        FileExtension = blogImage.FileExtension,
+                        Url = blogImage.Url
+                    };
+
+                    return Ok(response);
+                }
             }
+            catch(Exception ex)
+            {
+                _logger.Log(LogLevel.Error, ex, "Failed");
+            }
+            
             return BadRequest(ModelState);
         }
 
@@ -75,6 +85,12 @@ namespace CodePulse.API.Controllers
 
             return Ok(response);
         }
+
+        //[HttpDelete]
+        //public async Task<IActionResult> DeleteImage()
+        //{
+
+        //}
         private void ValidateFileUpload(IFormFile file)
         {
             var allowedExtension = new string[]  { ".jpg", ".jpeg", ".png" };
