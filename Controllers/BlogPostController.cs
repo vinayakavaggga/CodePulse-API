@@ -4,6 +4,7 @@ using CodePulse.API.Models.Response;
 using CodePulse.API.Repositories.IRepositories;
 using jdk.nashorn.@internal.ir;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 
 namespace CodePulse.API.Controllers
 {
@@ -35,6 +36,7 @@ namespace CodePulse.API.Controllers
                 FeaturedImageURL = request.FeaturedImageURL,
                 DateCreated = request.DateCreated,
                 Author = request.Author,
+                AuthorId = request.AuthorId,
                 IsVisible = request.IsVisible,
                 Category = new List<CategoryModel>()
             };
@@ -59,6 +61,7 @@ namespace CodePulse.API.Controllers
                 FeaturedImageURL = blogPost.FeaturedImageURL,
                 DateCreated = blogPost.DateCreated,
                 Author = blogPost.Author,
+                AuthorId = blogPost.AuthorId,
                 IsVisible = blogPost.IsVisible,
                 categoryResponse = blogPost.Category.Select(x => new CategoryModel
                 {
@@ -70,6 +73,7 @@ namespace CodePulse.API.Controllers
 
             return Ok(response);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetBlogPost()
@@ -89,6 +93,7 @@ namespace CodePulse.API.Controllers
                     FeaturedImageURL = blogPost.FeaturedImageURL,
                     DateCreated= blogPost.DateCreated,
                     Author = blogPost.Author,
+                    AuthorId = blogPost.AuthorId,
                     IsVisible = blogPost.IsVisible,
                     categoryResponse = blogPost.Category.Select(x => new CategoryModel
                     {
@@ -124,6 +129,7 @@ namespace CodePulse.API.Controllers
                 FeaturedImageURL = existingid.FeaturedImageURL,
                 DateCreated = existingid.DateCreated,
                 Author = existingid.Author,
+                AuthorId = existingid.AuthorId,
                 IsVisible = existingid.IsVisible,
                 categoryResponse = existingid.Category.Select(x => new CategoryModel
                 {
@@ -152,6 +158,7 @@ namespace CodePulse.API.Controllers
                 FeaturedImageURL = request.FeaturedImageURL,
                 DateCreated = request.DateCreated,
                 Author = request.Author,
+                AuthorId = request.AuthorId,
                 IsVisible = request.IsVisible,
                 Category = new List<CategoryModel>()
             };
@@ -185,6 +192,7 @@ namespace CodePulse.API.Controllers
                 FeaturedImageURL = blogPost.FeaturedImageURL,
                 DateCreated = blogPost.DateCreated,
                 Author = blogPost.Author,
+                AuthorId = blogPost.AuthorId,
                 IsVisible = blogPost.IsVisible,
                 categoryResponse = blogPost.Category.Select(x => new CategoryModel
                 {
@@ -221,6 +229,7 @@ namespace CodePulse.API.Controllers
                 FeaturedImageURL = deletedBlogPost.FeaturedImageURL,
                 DateCreated = deletedBlogPost.DateCreated,
                 Author = deletedBlogPost.Author,
+                AuthorId = deletedBlogPost.AuthorId,
                 IsVisible = deletedBlogPost.IsVisible,
                 
             };
@@ -250,6 +259,7 @@ namespace CodePulse.API.Controllers
                 FeaturedImageURL = blogpost.FeaturedImageURL,
                 DateCreated = blogpost.DateCreated,
                 Author = blogpost.Author,
+                AuthorId = blogpost.AuthorId,
                 IsVisible = blogpost.IsVisible,
                 categoryResponse = blogpost.Category.Select(x => new CategoryModel
                 {
@@ -257,6 +267,78 @@ namespace CodePulse.API.Controllers
                     Name = x.Name,
                     UrlHandle = x.UrlHandle,
                 }).ToList()
+            };
+
+            return Ok(response);
+        }
+
+
+        [HttpPost]
+        [Route("AddAuthors")]
+        public async Task<IActionResult> AddAuthors(AddAuthorRequestModel model)
+        {
+            var authors = new AuthorModel
+            {
+                AuthorName = model.AuthorName,
+                AuthorEmail = model.AuthorEmail,
+                RegisteredDate = model.RegisteredDate,
+                Description = model.Description
+            };
+
+            authors = await blogPostRepository.AddAuthor(authors);
+
+            var response = new AddAuthorResponseModel
+            {
+                AuthorName = authors.AuthorName,
+                AuthorEmail = authors.AuthorEmail,
+                RegisteredDate = authors.RegisteredDate,
+                Description = authors.Description
+            };
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("GetAuthor")]
+        public async Task<IActionResult> GetAuthors()
+        {
+            var response = await blogPostRepository.GetAuthor();
+
+            var getAuthorList = new List<AddAuthorResponseModel>();
+
+            foreach(var item in response)
+            {
+                getAuthorList.Add(new AddAuthorResponseModel
+                {
+                    ID = item.ID,
+                    AuthorName = item.AuthorName,
+                    AuthorEmail = item.AuthorEmail,
+                    RegisteredDate = item.RegisteredDate,
+                    Description = item.Description
+                });
+            }
+
+            return Ok(getAuthorList);
+        }
+
+        [HttpGet]
+        [Route("GetAuthor/{authorId:Guid}")]
+        public async Task<IActionResult> GetAuthorById([FromRoute] Guid authorId)
+        {
+            var author = await blogPostRepository.GetAuthorById(authorId);
+
+            if(author == null)
+            {
+                return NotFound();
+            }
+
+            var response = new AddAuthorResponseModel
+            {
+                ID = author.ID,
+                AuthorName = author.AuthorName,
+                AuthorEmail = author.AuthorEmail,
+                RegisteredDate = author.RegisteredDate,
+                Description = author.Description
             };
 
             return Ok(response);

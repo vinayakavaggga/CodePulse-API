@@ -72,6 +72,21 @@ namespace CodePulse.API.Repositories.Implementation
             return existingBlogPost;
         }
 
-        
+        public async Task<AuthorModel> AddAuthor(AuthorModel model)
+        {
+            await _dbContext.Authors.AddAsync(model);
+            await _dbContext.SaveChangesAsync();
+            return model;
+        }
+
+        public async Task<IEnumerable<AuthorModel>> GetAuthor()
+        {
+            return await _dbContext.Authors.ToListAsync();
+        }
+
+        public async Task<AuthorModel?> GetAuthorById(Guid authorId)
+        {
+            return await _dbContext.Authors.FirstOrDefaultAsync(x => x.ID == authorId);
+        }
     }
 }

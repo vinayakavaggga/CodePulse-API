@@ -15,5 +15,11 @@ namespace CodePulse.API.Repositories.IRepositories
         public Task<BlogPostModel?> UpdateBlogPost(BlogPostModel model);
 
         public Task<BlogPostModel?> DeleteBlogPost(Guid id);
+
+        public Task<AuthorModel> AddAuthor(AuthorModel model);
+
+        public Task<IEnumerable<AuthorModel>> GetAuthor();
+
+        public Task<AuthorModel?> GetAuthorById(Guid authorId);
     }
 }
