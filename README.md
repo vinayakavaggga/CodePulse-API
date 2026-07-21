@@ -48,5 +48,5 @@ If the database already exists, `Update-Database` will apply only the pending mi
 
 - ASP.NET Core 8 Web API
 - Entity Framework Core
-- SQL Server
+- SQL Server (SSMS)
 - Repository Pattern
