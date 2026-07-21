@@ -14,7 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("CodePulseConnectionStrings"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("VVBLoggersConnectionStrings"));
 });
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();

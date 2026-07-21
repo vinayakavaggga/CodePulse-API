@@ -93,7 +93,7 @@ namespace CodePulse.API.Controllers
         //}
         private void ValidateFileUpload(IFormFile file)
         {
-            var allowedExtension = new string[]  { ".jpg", ".jpeg", ".png" };
+            var allowedExtension = new string[]  { ".jpg", ".jpeg", ".png", ".mp4" };
 
             if(!allowedExtension.Contains(Path.GetExtension(file.FileName).ToLower()))
             {
