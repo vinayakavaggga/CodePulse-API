@@ -14,7 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("VVBLoggersConnectionStrings"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("VVBloggersConnectionStrings"));
 });
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -41,11 +41,24 @@ app.UseCors(options =>
 
 app.UseAuthorization();
 
+var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Images");
+
+if (!Directory.Exists(imagePath))
+{
+    Directory.CreateDirectory(imagePath);
+}
+
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources/Images")),
+    FileProvider = new PhysicalFileProvider(imagePath),
     RequestPath = "/Resources/Images"
 });
+
+//app.UseStaticFiles(new StaticFileOptions
+//{
+//    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources/Images")),
+//    RequestPath = "/Resources/Images"
+//});
 
 app.MapControllers();
 
