@@ -78,32 +78,38 @@ namespace CodePulse.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBlogPost()
         {
-            var response = await blogPostRepository.GetBlogPostModel();
             var blogpostList = new List<BlogPostResponseModel>();
-
-            foreach(var blogPost in response)
+            try
             {
-                blogpostList.Add(new BlogPostResponseModel
+                var response = await blogPostRepository.GetBlogPostModel();
+                foreach (var blogPost in response)
                 {
-                    ID = blogPost.ID,
-                    Title = blogPost.Title,
-                    ShortDescription = blogPost.ShortDescription,
-                    Content = blogPost.Content,
-                    UrlHandle = blogPost.UrlHandle,
-                    FeaturedImageURL = blogPost.FeaturedImageURL,
-                    DateCreated= blogPost.DateCreated,
-                    Author = blogPost.Author,
-                    AuthorId = blogPost.AuthorId,
-                    IsVisible = blogPost.IsVisible,
-                    categoryResponse = blogPost.Category.Select(x => new CategoryModel
+                    blogpostList.Add(new BlogPostResponseModel
                     {
-                        Id = x.Id,
-                        Name = x.Name,
-                        UrlHandle = x.UrlHandle,
-                    }).ToList()
-                });
+                        ID = blogPost.ID,
+                        Title = blogPost.Title,
+                        ShortDescription = blogPost.ShortDescription,
+                        Content = blogPost.Content,
+                        UrlHandle = blogPost.UrlHandle,
+                        FeaturedImageURL = blogPost.FeaturedImageURL,
+                        DateCreated = blogPost.DateCreated,
+                        Author = blogPost.Author,
+                        AuthorId = blogPost.AuthorId,
+                        IsVisible = blogPost.IsVisible,
+                        categoryResponse = blogPost.Category.Select(x => new CategoryModel
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            UrlHandle = x.UrlHandle,
+                        }).ToList()
+                    });
+                }
             }
-
+            catch (Exception ex)
+            {
+                return Ok(ex.ToString());
+            }
+            
             return Ok(blogpostList);
         }
 
