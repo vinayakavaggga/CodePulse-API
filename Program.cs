@@ -3,18 +3,33 @@ using CodePulse.API.Repositories.Implementation;
 using CodePulse.API.Repositories.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("VVBloggersConnectionStrings"));
+});
+
+// Register CORS BEFORE builder.Build()
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFirebase", policy =>
+    {
+        policy
+            .WithOrigins(
+                "https://gk-bloggers-v.web.app",
+                "https://gk-bloggers-v.firebaseapp.com"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -24,23 +39,13 @@ builder.Services.AddScoped<IImageBlogRepository, ImageRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
-
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.UseCors(options =>
-{
-    options.AllowAnyHeader();
-    options.AllowAnyOrigin();
-    options.AllowAnyMethod();
-});
+// Use the CORS policy
+app.UseCors("AllowFirebase");
 
 app.UseAuthorization();
 
@@ -56,12 +61,6 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(imagePath),
     RequestPath = "/Resources/Images"
 });
-
-//app.UseStaticFiles(new StaticFileOptions
-//{
-//    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources/Images")),
-//    RequestPath = "/Resources/Images"
-//});
 
 app.MapControllers();
 
