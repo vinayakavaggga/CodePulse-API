@@ -25,7 +25,8 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins(
                 "https://gk-bloggers-v.web.app",
-                "https://gk-bloggers-v.firebaseapp.com"
+                "https://gk-bloggers-v.firebaseapp.com",
+                "http://localhost:4200"
             )
             .AllowAnyHeader()
             .AllowAnyMethod();

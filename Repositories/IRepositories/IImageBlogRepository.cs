@@ -7,5 +7,7 @@ namespace CodePulse.API.Repositories.IRepositories
         public Task<BlogImage> UploadImage(IFormFile file, BlogImage blogImage);
 
         public Task<ICollection<BlogImage>> GetAllImages();
+
+        public Task<BlogImage> DeleteImage(Guid id);
     }
 }

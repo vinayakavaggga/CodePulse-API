@@ -46,5 +46,24 @@ namespace CodePulse.API.Repositories.Implementation
 
             return blogImage;
         }
+
+        public async Task<BlogImage> DeleteImage(Guid id)
+        {
+            var blogImage = await applicationDBContext.BlogImages.FindAsync(id);
+            if (blogImage == null) return null;
+
+            // Remove file from disk if it exists
+            var localPath = Path.Combine(_webHostEnvironment.ContentRootPath, "Resources", "Images", $"{blogImage.FileName}{blogImage.FileExtension}");
+            if (File.Exists(localPath))
+            {
+                File.Delete(localPath);
+            }
+
+            // Remove from database
+            applicationDBContext.BlogImages.Remove(blogImage);
+            await applicationDBContext.SaveChangesAsync();
+
+            return blogImage;
+        }
     }
 }

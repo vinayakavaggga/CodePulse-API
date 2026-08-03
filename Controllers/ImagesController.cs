@@ -1,6 +1,8 @@
 ﻿using CodePulse.API.Models.DataBase;
 using CodePulse.API.Models.Response;
+using CodePulse.API.Repositories.Implementation;
 using CodePulse.API.Repositories.IRepositories;
+using com.sun.xml.@internal.bind.v2.model.core;
 using jdk.nashorn.@internal.ir;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -86,11 +88,19 @@ namespace CodePulse.API.Controllers
             return Ok(response);
         }
 
-        //[HttpDelete]
-        //public async Task<IActionResult> DeleteImage()
-        //{
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> DeleteImage([FromRoute] Guid id)
+        {
+            var deletedImage = await imageBlogRepository.DeleteImage(id);
 
-        //}
+            if (deletedImage == null)
+            {
+                return NotFound();
+            }
+
+            return Ok("Deleted successfully");
+        }
         private void ValidateFileUpload(IFormFile file)
         {
             var allowedExtension = new string[]  { ".jpg", ".jpeg", ".png", ".mp4" };
